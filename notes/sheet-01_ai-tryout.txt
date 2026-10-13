@@ -1,0 +1,82 @@
+AI try-out for exercise 1.3 (raw material, NOT for submission)
+Tool: Claude Code (model Claude Opus 5.5), 2026-10-13
+Caveat: this AI had already read and proofread the student's answer to 1.2 before answering,
+so the result is not fully independent.
+
+==========================================================================
+PROMPT
+==========================================================================
+
+Design the system for a student software project: a meeting assistant that records meetings
+(in person or online), transcribes them, and generates summaries for the users. The team has
+3-4 students and one semester. Answer these questions:
+- How would you set up the system?
+- Which functions are central?
+- Which parts of the system are needed (app, server, database, interfaces, administration)?
+- How would you plan and structure the work between these parts?
+- How would you check that the system works as intended?
+- What challenges or risks could arise from the design?
+
+==========================================================================
+AI ANSWER
+==========================================================================
+
+1. Setup
+A web application with a REST backend. Audio is processed asynchronously, because
+transcribing a one-hour meeting takes minutes, not milliseconds. Everything runs in Docker
+(docker compose) so the whole team has identical environments, with CI running the tests on
+every merge request.
+
+2. Central functions
+- Capture: upload an audio file, or record directly in the browser (MediaRecorder API).
+  Capturing online meetings directly from Zoom or Teams is much harder and should come later.
+- Transcribe: speech-to-text, e.g. Whisper (self-hosted) or a cloud speech API.
+- Speaker diarization: who said what (e.g. pyannote). Without it, a summary loses most of
+  its value.
+- Summarise: an LLM turns the transcript into a summary, decisions and action items.
+- Browse and search past meetings.
+
+3. Parts of the system
+- Frontend: web app (any SPA framework) for upload, recording, and viewing results.
+- API backend: auth, meeting management, starts processing jobs.
+- Job queue + worker(s): run transcription, diarization and summarisation outside the
+  request cycle (e.g. Celery/RQ with Redis). The worker needs much more CPU/GPU than the API.
+- Storage: PostgreSQL for users, meetings, transcripts and summaries; object storage
+  (e.g. MinIO/S3) for the audio files, which are too large for the database.
+- Administration: user and storage management, deleting recordings.
+- Later: mobile app or ESP32-based recording device that talks to the same API.
+
+Data flow: client uploads audio -> API stores the file and creates a job -> worker
+transcribes, diarizes, summarises -> results go into the database -> client polls or is
+notified and shows the result.
+
+4. Planning and structure
+- First agree on the API contract and the data model, so that frontend, backend and worker
+  can be developed in parallel against it.
+- First milestone is a "walking skeleton": upload a file, get a raw transcript back,
+  end to end, with no polish. Then add diarization, then summaries, then recording, then
+  extra devices.
+- Split ownership by component (frontend / API / ML worker / infrastructure), but review
+  across components so knowledge is shared.
+
+5. Checking that it works
+- Unit tests for API and business logic; integration tests for the job pipeline with a
+  short fixed audio file.
+- A small test corpus of recordings with hand-written reference transcripts, used to
+  measure word error rate (WER). "Perfect" transcription is not achievable, so set a
+  measurable target instead (e.g. WER below a fixed threshold on the test corpus).
+- Summaries cannot be checked automatically in a reliable way: let people rate them
+  against the transcript, and link each summary point to the transcript passage it came
+  from so errors are easy to spot.
+- End-to-end tests of the main user flow, plus usability tests with people outside the team.
+
+6. Challenges and risks
+- Privacy and law: recording people requires their consent (GDPR). Recordings and
+  transcripts are personal data: they need access control, a retention/deletion policy,
+  and care about sending them to external cloud APIs.
+- Quality: accents, dialects, cross-talk and poor microphones lower transcript quality;
+  LLM summaries can invent content that was never said.
+- Compute: self-hosted models need a GPU to be fast enough; cloud APIs cost money.
+- Scope: live capture from online meeting platforms, mobile app and hardware device are
+  each projects of their own. Risk of not finishing the core pipeline if these start too early.
+- Integration: the ML part is the least predictable; plan time for experimenting with it.

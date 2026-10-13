@@ -1,0 +1,257 @@
+Exercise 1.1 - Project Planning: Your Own Project (3 p.)
+Name:
+Project idea (one or two sentences):
+
+
+==========================================================================
+1. Think about how you would approach your project if you were unfamiliar with specific methods or technical terms.
+--------------------------------------------------------------------------
+
+Brainstorm in a Team to figure out what everyone wants from the project. Everyone should get
+a say in what happens so that everyone is on the same page about the project. Afterwards one should 
+go deeper. Like which architectural design one should use, what coding languages, what API´s
+how to work out the task distribution etc.. Propably not everyone will be an expert in everything 
+so the team should communicate the general idea behind difficult topics to bridge the gap. After that
+one should do individual research based on the taks one works on. to get a broad view. 
+
+Specific ideas could be taken from papers, coworkers, YT videos, STack Overflow, etc.
+
+
+
+
+
+
+
+==========================================================================
+2. How would you start the project?
+--------------------------------------------------------------------------
+PErsonally the most important thing about starting a project is planning. First and Foremost that
+helps to set everyones expactations. And get everyone on the same page. The team needs to use 
+a single form of management. For example Git, and in our case Trello. Furthermore everyone should
+get tasks in the early stages that dont rely on somebody else in order to prevent waiting times.
+
+VEry important is also to resonate over the past mistakes in prior projects like SOftware Engeneering
+and dont make these again. 
+
+FOr me personally i would like a project where there a SPrints so that at all times a form of 
+submision ist ready. Like in my work.
+
+
+==========================================================================
+3. What initial steps are important to you to define goals and responsibilities?
+--------------------------------------------------------------------------
+SOme points are already in 1 and 2 from above but generally.
+
+But my main points are all on the same page, compromise and dont overload on work.
+
+
+
+==========================================================================
+4. Which roles would you need in the team (e.g. developers, designers, testers)?
+--------------------------------------------------------------------------
+I personally think that the team is small enough that everyone can go Fullstack and be reviewed by others before 
+merging on develop. But for the professor there should be one main guy in order to ensure clean communikation.
+
+Not everyone need to do everything but everyone can review anybody.
+
+
+
+==========================================================================
+5. How would you organise collaboration and communication within the team?
+--------------------------------------------------------------------------
+I think a whatsapp group for generall communiaction and organisation is very important Furthermore
+it allows for fast answers and agile communication. THis should be preservt for generall questions not
+for coding to be pasted into. 
+
+For coding i would use git because i know it best and have made mostly positive experiences.
+MAybe in bigger project you could use dropbox for complience data and documentation because 
+it is more excessable for non developer minds, our project should be small eneough so that shouldnt be the case.
+
+For live communication i would like discord for meeting online to be flexible and non time consuming.
+Furthermore my team as a similar schedule so there will be enough situations to meet in uni.
+
+
+==========================================================================
+6. When would you consider the project finished, and how would you
+   measure that?
+--------------------------------------------------------------------------
+Like i already statet the project should be in a finished state after the first sprint but with 
+almost no features. Personally i would consider it finished after the end of the final presentation.
+Whatevery is able to be delivered by then is the finished project.
+
+
+
+
+
+__________________________________________________________________________________________
+
+
+
+•Think about how you would set up the system for your project.
+
+I would use git for version of control and start planning the infrastructure. I would use vite for 
+the frontend application and for backend django in python to ensure a clean project structure with
+components sourced by the outside. For example we would need to be proghramming a user management because django has that already.
+
+FOr database i would personally use posgresql as we used that in our bachelor. THe hosting should be done in docker
+to ensure a clean reproduceble developing environment. THis included that the versions of different 
+building blocks are the same between all developing parties and no version of control problems 
+arise.
+
+
+
+•Which functions are central to your idea?
+
+Record -> Retrive -> Recap
+
+are the central funktions for our first sprint. 
+
+Record:
+
+MEining that we ensure that our system can record all participants of a meeting either in real life or online.
+
+Retirve:
+
+We need to ensure to get the coorect sentences from the recording. THis need to be perfect to 
+get the important meeting data as wrong information could be fatal.
+
+Recap:
+
+Use the hole text as a baseline and formulate conrete ideas and summaries for the user.
+MEchine learning would be a big part of this.
+
+
+•Which ‘parts’ or areas of the system are needed (e.g. app, server, database, interfaces, administration)?
+
+In the first sprint our app ist a simple web-application in order to have a pipeline between audios
+and the finalised text. afterwards there could be physical device like esp or our mobil phone 
+using an app to ensure it is a recording device. 
+
+
+Server would be only needed for the webapp or app in order to provide it. In our prototype it could be a docker containetr.
+
+
+•How would you plan and structure the work between these parts?
+
+I would structure it using sprints with certain milestones we want to meet in jira and github branches for each feature.
+
+
+
+
+•How would you check that your system works as intended?
+
+There should be a V modell implementation for testing. Furthermore one could use non tech persons to
+click through the application to ensure it works as intended. 
+
+In addition there should be a devOps pipeline like sonarcube that tests the production code before deploy.
+There could also be a staging server to se how everything behaves before production.
+
+
+
+
+
+What challenges or risks could arise from your design?
+
+Hopefully on but perhabs its all to big. Our project seems maybe to big to ensure all features get
+delivered by the end of the semester. Furthermore communication ist key but im sure this wont be an issue as i already 
+know these people from projects in the bachelor. 
+
+A big risk is that the workload in all other parts of the semester could be to big and that could reflect in poor decision making.
+
+
+________________________________________________________________________________________
+
+Go through the phases of your project (e.g. idea and requirements, planning, design, implementation,
+testing, documentation). For which tasks would you use AI, and why?
+
+
+I really like Ai for reaserch personally and for it to explain to me simple concepts i havent used in a long time like 
+maybe singleton or how to declare a Array. 
+
+Furthermore i would use it to correct my writing as im not very good in english and german grammatics.
+This corrolates directly with code commends and documentation as i would use it to summeryze then check that and if its correct.
+
+One could also use it to get a fast overview about a topic like RAG that im not so familiar with whereas others in 
+my group are almost experts. It is maybe a convenient tool to get fast answers for simple questions.
+
+I personally like coding with copilot as there are a lot of languages i need to know and i dont always remember them all by heart.
+So for example Array definitn like already said.
+
+
+
+•For which tasks would you not use AI, or only to a limited extent? Justify your decision.
+
+i would use it for the creative parts as i dont think AI is good at that. i want do do my idias
+not the Ai slop. 
+
+NExt i wouldnt full autothe entire codebase as that would contribute to an unsafe environment. Every letter the AI types
+needs to be read at least by 2 different persons if it makes sense (maybe no when summarizing or rewriting in better english).
+
+
+
+
+
+
+
+•How would you check whether an AI-generated result (text, diagram, code, test) is correct and fits your
+project?
+
+If i write my text myself and let it rewrite by ai i would put both side by side to ensure the core context is the same.
+Furthermore for code and tests one needs to understand them and maybe work with Gernzwertanalysis and ensure the Ai 
+made them all. THe same goes for coding at least 2 person need to unserstand the code the ai wrote and why or if it fits our project.
+
+
+a diagramm i woulds ai generate.
+
+
+
+
+
+•What risks do you see (e.g. wrong or invented answers, security, privacy, licences, dependence, loss of
+learning)?
+
+AI might leave security breaches behind or use wrong versions. Furthermore the wrong annotations can 
+lead to a user having the permissions of an admin. that should be catched by or stating environment though.
+
+AI often hallucinates so everything it writes needs to be confirmed which lead to a bog overhead.
+
+
+
+•Who is responsible for a result that was created with the help of AI?
+
+the developer who pushes the ai features onto develop should be held accountable for the issues the ai causes
+as it is his feature. Furthermroe the pull request revieee could also be held accountable.
+
+
+
+•What rules would you agree on in your team for using AI, and how would you document it?
+
+I think everyone needs to make up his own mind. I cant force people to use it neither can i stop them.
+Its their deciocion and they just need to take responsability for whatever they push onto dev
+
+
+
+•Try it out: give an AI tool one concrete task from your project planning or system design (Exercises 1
+and 2). Compare the result with your own answer: what was useful, what was wrong or missing?
+
+__________________________________________
+Prompt (so übernimmst du ihn in 1.3):
+
+For a student project (team of 3–4, one semester), we are building a meeting assistant web app that records meetings (in person or online), transcribes them, and generates summaries for the users. How would you check that the system works as intended?
+
+Antwort der KI:
+
+Unit tests for the backend logic and API endpoints, run automatically in a CI pipeline on every merge request.
+Integration test of the whole pipeline (upload → transcription → summary) using a short, fixed audio file, so you can see whether all components work together.
+Test corpus for transcription quality: a few recordings with hand-written reference transcripts. Measure the word error rate (WER) and set a target value. "Perfect" transcription is not realistic, so the goal has to be measurable.
+Check the summaries manually: they cannot be tested reliably by automation. People rate them against the transcript, and each point in the summary links to the transcript passage it is based on, so invented content is easy to spot.
+End-to-end tests of the main user flow: log in, record or upload, view the result.
+Usability tests with people outside the team who click through the app.
+Staging environment to test the system under realistic conditions before release.
+------------------------------------------------------
+
+
+i liked the anwer but i think it was to bloated. It went already far to deep into detail for it to make sense.
+i like mine better because it was also my answer not his.
+
+
