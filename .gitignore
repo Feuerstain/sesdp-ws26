@@ -1,0 +1,25 @@
+# Course material (copyrighted, stays local)
+materials/
+labs/*/sheet_*.pdf
+
+# Upload archives
+dist/
+
+# Build output
+target/
+out/
+bin/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
