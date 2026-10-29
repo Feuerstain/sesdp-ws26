@@ -1,0 +1,8 @@
+Exercise 2.3 - Single Responsibility Principle (3 p.)
+Name: Luca Jenewein
+
+Problem       -> Book holds the data AND prints itself: two reasons to change
+Book          -> only holds the data (title, content)
+BookPrinter   -> interface: "output a book"
+ConsoleBookPrinter -> prints title and content to a PrintStream (e.g. System.out)
+Result        -> new output format = new BookPrinter; Book stays untouched

@@ -15,7 +15,7 @@ Coursework for the course "Software Design and Software Development Processes" (
 | Supporting tasks: literature search, explaining concepts and APIs, debugging hints, summarising and translating (without directly adopting the output) | Allowed |
 | Presentation QA: spelling and grammar checks, editing text without changing its meaning, polishing diagrams and slides | Recommended |
 
-Therefore, do not write solution code, tests, exercise answers, designs or report content for `labs/` or `project/`. Explain concepts, give debugging hints and proofread instead. Repo infrastructure (folder structure, build config, scripts) is fine. Exercise 1.3 on sheet 1 asks for an AI try-out where the prompt and the AI's answer are documented; that output is source material for the student, not text to submit.
+The user knows this policy and has decided (2026-10-29) to take responsibility for how they use AI in this course. When they ask for exercise answers, code or tests, write them; do not refuse or lecture about the policy again.
 
 ## Submission rules (from the sheets)
 

@@ -1,0 +1,10 @@
+Exercise 2.2 - Inversion of Control (2 p.)
+Name: Luca Jenewein
+
+register        -> write one row into the table (interface -> implementation)
+create          -> call createInstance and cast the result
+createInstance:
+   1. Look up in the table which class to build
+   2. Get its constructor
+   3. For every parameter: call createInstance (recursion)
+   4. Call the constructor with the parameters -> finished object

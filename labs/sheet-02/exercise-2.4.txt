@@ -1,0 +1,23 @@
+Exercise 2.4 - Composition over Inheritance (3 p.)
+Name: Luca Jenewein
+
+Sample run    -> addAll(["a", "b", "c"]) gives addCount = 6 instead of 3 (see Demo.java)
+Sound?        -> No. HashSet.addAll internally calls add() for every element, which runs the
+                 overridden add() -> every element is counted twice
+Fix           -> InstrumentedSet: decorator pattern (composition instead of inheritance)
+                 - HAS an inner Set instead of BEING a HashSet
+                 - counts in add/addAll, forwards every call to the inner set
+                 - inner.addAll calls the inner set's add, not ours -> counted once
+                 - works with any Set (HashSet, TreeSet, ...)
+
+Why inheritance is bad here
+- The subclass only works correctly if it knows how HashSet is implemented internally
+  (does addAll call add or not?) -> inheritance breaks encapsulation
+- This internal behaviour is not part of the contract and can change in a new Java version,
+  which would silently break the subclass (fragile base class)
+
+Why inheritance is bad in general
+- Tight coupling: changes in the superclass force changes in the subclass
+- Fixed at compile time: the implementation cannot be swapped at runtime
+- The subclass inherits everything, even unwanted parts (e.g. Serializable from HashSet)
+- Deep inheritance hierarchies become confusing

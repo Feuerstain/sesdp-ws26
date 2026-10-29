@@ -1,0 +1,110 @@
+Exercise 2.1 - Programming Paradigms (2 p.)
+Name: Luca Jenewein
+
+References "(slide N)" refer to the lecture slides "Part 2 - Software Engineering 101".
+
+
+==========================================================================
+1. Imperative programming
+--------------------------------------------------------------------------
+Problem: Blinking an LED on a microcontroller
+- Turn the LED on, wait 500 ms, turn it off, wait 500 ms, in an endless loop
+
+Why imperative is the best fit:
+- An imperative program consists of a program state and instructions that change this state
+  (slide 5); here the state is the LED pin, and every step is a command that changes it
+- "Programs are sequences of statements" (slide 4): the task is exactly such a sequence
+  (on -> wait -> off -> wait), and the order matters
+- The imperative style "closely resembles hardware" (slide 4); writing to a hardware register is
+  an assignment that changes the state of the device
+- Loops, variables and assignments, and I/O are the core features of imperative languages
+  (slide 7); the endless loop and the pin writes need nothing more
+
+Why functional is less suitable:
+- Functional programming means no side effects, immutable variables, and programs as a single
+  expression (slide 15); switching the LED and waiting are pure side effects, so the whole program
+  works against the paradigm
+- Pure functions must return the same value for the same input and have no side effects (slide 16);
+  there is no computation here that could be expressed this way
+- In a purely functional language, I/O is not even part of the language core and is only possible
+  through monads (slide 20), which adds complexity without any benefit
+- Lazy evaluation delays computations until they are needed (slide 22), which makes the exact
+  timing of the blinking harder to control
+
+Why object-oriented is less suitable:
+- The OOP features encapsulation, abstraction, inheritance and polymorphism (slide 31) aim at
+  structuring and maintaining larger programs; a single LED with a fixed sequence has nothing to
+  encapsulate or specialise
+- OOP is an extension of imperative programming (slide 31): the actual work would still be the
+  same imperative loop, only wrapped in additional classes
+- Late binding is slower than an early-bound call (slide 35), and on a small microcontroller every
+  bit of overhead counts
+
+
+==========================================================================
+2. Functional programming
+--------------------------------------------------------------------------
+Problem: Evaluating measurement data
+- From a list of temperature measurements: remove invalid values, convert Celsius to Fahrenheit,
+  and compute the average
+
+Why functional is the best fit:
+- The task is a chain of data transformations: filter -> map -> reduce
+- This is functional decomposition (slide 29): the problem is split into closed subtasks that are
+  recombined by function composition, just like the slide example "sumOfSquares = sum . map (^2)"
+- Lists are the most prominent data type and higher-order functions are a core feature of
+  functional languages (slide 20); filter, map and reduce are exactly such functions
+- Pure functions return the same result for the same input and have no side effects (slide 16);
+  each step can be tested on its own, and the original measurements stay unchanged (slide 23)
+- The functional style is declarative: it states what is computed, not how (slide 15)
+
+Why imperative is less suitable:
+- Imperative programs work through assignments that change variables (slide 4); here this means
+  loops with a running sum, a counter and a separate result list
+- This state has to be managed by hand, and each piece of state is a potential source of errors
+  (cf. statelessness, slide 23)
+- The actual transformation is hidden in loop bookkeeping instead of being expressed directly
+
+Why object-oriented is less suitable:
+- OOP structures programs around objects with protected state that communicate via messages
+  (slides 32-33); a measurement series is just data with no behaviour of its own
+- There are no objects with their own identity or life cycle for which encapsulation or
+  inheritance (slide 31) would help
+- The lecture itself sums it up: functional programming is used "to impose discipline on the
+  location and access to data" (slide 40), which is exactly what this task needs
+
+
+==========================================================================
+3. Object-oriented programming
+--------------------------------------------------------------------------
+Problem: Managing a climbing gym
+- Manage members, subscriptions and entries
+- At check-in, check whether the member has a valid subscription or entries left on their
+  ten-visit card
+
+Why object-oriented is the best fit:
+- Members and subscriptions have their own identity and a state that changes over time; OOP is
+  built on "local retention and protection and hiding of state" (slide 32)
+- Encapsulation binds data and code into one unit and prevents violations of the invariants
+  maintained by the methods (slide 34); the remaining entries can only be changed through a
+  method like "checkIn()" and never become negative
+- Polymorphism via subtyping and late binding (slide 35) lets monthly subscriptions and ten-visit
+  cards apply different access rules behind a common interface, like the Shape example (slide 38)
+- New subscription types can be added as new subclasses without changing the check-in code
+
+Why imperative is less suitable:
+- A purely procedural solution is possible, but data and the rules belonging to it end up spread
+  across many functions
+- Without encapsulation, any part of the program can change the state directly (slide 34),
+  e.g. set the remaining entries to an invalid value
+- Different subscription types would need if/else or switch chains at every point where the
+  type matters, instead of one polymorphic method call
+- OOP was introduced precisely as an extension of imperative programming to improve
+  maintainability (slide 31)
+
+Why functional is less suitable:
+- Immutable data and pure state transitions would also work (slides 15-16)
+- However, every check-in would create a new version of the member instead of updating one
+  long-lived member, while the real-world entities do change over time
+- The lecture assigns polymorphism the role of crossing architectural boundaries (slide 40);
+  an object model represents members and their changing subscriptions much more directly

@@ -23,3 +23,8 @@ bin/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# .NET
+obj/
+*.user
+.vs/
