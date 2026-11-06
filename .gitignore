@@ -28,3 +28,6 @@ desktop.ini
 obj/
 *.user
 .vs/
+
+# Node
+node_modules/

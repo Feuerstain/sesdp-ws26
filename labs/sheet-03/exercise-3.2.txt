@@ -1,0 +1,50 @@
+Exercise 3.2 - Event Sourcing: Task Management System (5 p.)
+Name: Luca Jenewein
+
+References "(slide N)" refer to the lecture slides "Part 3 - Software Engineering 102".
+
+Code   -> event-sourcing/ (TypeScript, needs Node.js)
+Run    -> cd event-sourcing
+          npm install
+          npm test            (test suite)
+          npm start           (main application, prints the rebuilt state)
+          npm run typecheck   (TypeScript compiler without output)
+
+Idea            -> the task state is never stored, only the events; the event log is the single
+                   source of truth (slides 33, 35)
+eventStore.ts   -> Event, EventStore, InMemoryEventStore as given on the sheet
+task.ts         -> Task, TaskState as given on the sheet
+projector.ts    -> Projector<S> as given on the sheet
+taskEvents.ts   -> one type per event (TaskCreated, TaskCompleted, TaskReopened, TaskCommentAdded)
+                   with its payload, so that inputData is typed inside the projector
+taskProjector.ts-> TaskProjector implements Projector<TaskState>
+main.ts         -> usage example from the sheet, extended by a second task, complete and reopen
+
+apply(state, event): looks at event.type and returns the next state
+   TaskCreated      -> adds a task with status "open" and no comments
+   TaskCompleted    -> status becomes "completed"
+   TaskReopened     -> status becomes "open" again
+   TaskCommentAdded -> comment is appended to the comments of the task
+
+getCurrentState(events)
+   1. Start with the empty state {}
+   2. Call apply for every event, in the order they were stored (reduce)
+   3. The last result is the current state -> one TaskState with all tasks = replay (slide 36)
+
+Immutability    -> apply never assigns into the given state
+                   - the state is copied with { ...state, [id]: newTask }
+                   - the task is copied with { ...task, status: ... }
+                   - comments are copied with [...task.comments, comment], no push
+                   - the tests freeze the old state (Object.freeze): any write would throw
+
+Events that do not fit
+   - event for a task id that does not exist -> ignored, state stays the same
+   - second TaskCreated for an existing id   -> ignored, the first one counts
+   - unknown event type                      -> ignored
+   Reason: events are immutable and stay in the log forever (slide 33), so a replay must never
+   fail because of one old event. Checking whether an action is allowed belongs to the place
+   where the event is appended, not to the projector.
+
+What the tests also show
+   - same events -> same state, every time (replay is deterministic)
+   - replaying only the first events gives the state at an earlier point in time (slide 38)

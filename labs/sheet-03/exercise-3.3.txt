@@ -1,0 +1,86 @@
+Exercise 3.3 - Design Pattern: State vs. Strategy (2 p.)
+Name: Luca Jenewein
+
+References "(slide N)" refer to the lecture slides "Part 3 - Software Engineering 102".
+Source for the two patterns: Gamma, Helm, Johnson, Vlissides - Design Patterns (1994),
+chapters "State" and "Strategy".
+
+
+==========================================================================
+The two patterns in short
+--------------------------------------------------------------------------
+Strategy
+- Defines a family of algorithms, puts each one into its own class behind a common interface,
+  and makes them interchangeable
+- A context object holds one strategy and delegates the work to it
+- Example from this sheet: ShippingMethod in exercise 3.1 with StandardShipping and ExpressShipping
+
+State
+- Lets an object change its behaviour when its internal state changes; from outside it looks as
+  if the object had changed its class
+- Every state is its own class behind a common interface; the context holds the current state
+  object, delegates to it, and the state object is replaced when the state changes
+- Example: an order that is new -> paid -> shipped. ship() works in the state "paid" and switches
+  the order to "shipped"; in the state "new" the same call is rejected
+
+
+==========================================================================
+Commonalities
+--------------------------------------------------------------------------
+- Both are behavioural object patterns: they distribute behaviour through object composition,
+  not through inheritance (slide 49)
+- The structure is the same: a context holds a reference to an interface, several concrete
+  classes implement it, and the context delegates calls to the object it currently holds
+  -> the class diagrams of both patterns look identical
+- Both replace if/else or switch chains by polymorphism
+  -> a new strategy or a new state is a new class, existing code stays closed (OCP, slide 25)
+- In both the behaviour of the context can change at runtime, because only the referenced object
+  is exchanged; with inheritance this would be fixed at compile time
+- Both kinds of objects can be shared between contexts if they carry no data of their own
+  (slide 44: "sharing strategies", "sharing state" -> Flyweight)
+
+
+==========================================================================
+Differences
+--------------------------------------------------------------------------
+Intent
+- Strategy: HOW something is done. Several ways to solve the same task (e.g. several ways to
+  compute the shipping cost)
+- State: WHAT the object does depends on the situation it is in. The same call does different
+  things, or is not allowed at all, depending on the state
+
+Who chooses the object
+- Strategy: the client chooses it from outside and passes it in; it is usually set once
+- State: the change happens inside, as a result of method calls; the client normally does not
+  know which state objects exist
+
+Knowledge of each other
+- Strategy: the strategies are independent and do not know each other
+- State: the states know their successors (transitions), and often hold a reference back to the
+  context in order to set the next state
+
+Transitions
+- Strategy: there are none; a strategy never replaces itself by another one
+- State: transitions are the core of the pattern; together the state classes form a state machine
+
+Size of the interface
+- Strategy: usually one method, the algorithm
+- State: one method per action of the context, and every state has to answer every action
+
+Lifetime
+- Strategy: typically stays the same for the whole lifetime of the context (or for one call)
+- State: is expected to change many times during the lifetime of the context
+
+What it replaces
+- Strategy: one condition that selects an algorithm ("switch (method)")
+- State: the same condition over a status field, repeated in many methods ("if (status == 1)")
+
+
+==========================================================================
+Summary
+--------------------------------------------------------------------------
+- Same structure, different intent
+- Strategy: the client plugs in one of several interchangeable algorithms
+- State: the object itself moves through its states and behaves differently in each of them
+- Rule of thumb: if the objects replace each other on their own, it is State; if somebody from
+  outside picks one, it is Strategy

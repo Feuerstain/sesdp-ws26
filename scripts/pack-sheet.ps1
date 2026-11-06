@@ -1,5 +1,5 @@
 # Zips labs/sheet-NN for the OLAT upload into dist/sheet-NN.zip.
-# Excludes the assignment PDF, build output and IDE files.
+# Excludes the assignment PDF, the internal README.md, build output and IDE files.
 # Usage: .\scripts\pack-sheet.ps1 1
 param([Parameter(Mandatory)][int]$Number)
 
@@ -13,7 +13,7 @@ New-Item -ItemType Directory -Force $dist | Out-Null
 $staging = Join-Path $dist $name
 if (Test-Path $staging) { Remove-Item -Recurse -Force $staging }
 
-robocopy $source $staging /E /XD target .idea .vscode out bin obj .vs /XF "sheet_*.pdf" "*.iml" ".gitkeep" | Out-Null
+robocopy $source $staging /E /XD target .idea .vscode out bin obj .vs node_modules /XF "sheet_*.pdf" "README.md" "*.iml" ".gitkeep" | Out-Null
 
 $zip = Join-Path $dist "$name.zip"
 if (Test-Path $zip) { Remove-Item -Force $zip }

@@ -1,0 +1,143 @@
+Exercise 3.1 - SOLID and Connascence (3 p.)
+Name: Luca Jenewein
+
+References "(slide N)" refer to the lecture slides "Part 3 - Software Engineering 102".
+Refactored code: src/main/java/at/ac/uibk/sesdp/sheet03/shop, tests: src/test/java (mvn test).
+
+
+==========================================================================
+1. SOLID
+--------------------------------------------------------------------------
+OCP - Open/Closed Principle
+- Where: OrderService.shippingCost decides with a switch over the method string
+- Why: entities should be open for extension but closed for modification; new functionality
+  should be added without changing existing code (slide 25). Here every new shipping method
+  means editing OrderService
+- Change request: "Add the shipping method 'pickup' (free of charge)"
+  -> the switch inside OrderService has to be edited, so the already tested order logic has to be
+     touched and tested again; the same happens for every further method
+  -> a method that was forgotten in the switch is only noticed at runtime (IllegalArgumentException)
+
+LSP - Liskov Substitution Principle
+- Where: ArchiveOrderStore extends FileOrderStore, but save() throws UnsupportedOperationException
+- Why: subtypes must be substitutable for their base types without altering the correctness of
+  the program (slide 26). An ArchiveOrderStore cannot be used wherever a FileOrderStore is expected
+- Likely bug: "Orders of last year should be handled through the archive store"
+  -> somebody passes an ArchiveOrderStore to code that expects an OrderStore / FileOrderStore
+  -> it compiles, but crashes at runtime in store.save(order)
+  -> in placeOrder the confirmation e-mail has already been sent at that point: the customer is told
+     "Your order was received", but the order was never saved
+
+ISP - Interface Segregation Principle
+- Where: OrderStore bundles save, load, exportCsv and backupToCloud in one interface
+- Why: clients should not be forced to depend on interfaces they do not use; many small
+  interfaces are preferred (slide 27). OrderService only needs save(), but depends on all four
+- This is also the reason for the LSP problem: the archive is forced to offer a save() it cannot do
+- Change request: "Store the orders in a database" (or: an in-memory store for the tests)
+  -> the new class must also implement exportCsv and backupToCloud, or throw again
+- Change request: "backupToCloud needs a region as second parameter"
+  -> every implementation and every client of OrderStore is affected, although most never back up
+
+DIP - Dependency Inversion Principle
+- Where: OrderService creates new FileOrderStore("orders.db") and new SmtpMailer("smtp.shop.at", 587)
+  itself; the field type is the concrete FileOrderStore, not even the OrderStore interface
+- Why: high-level modules (logic) should not depend on low-level modules (I/O, files); both should
+  depend on abstractions (slide 28). This is the hard-coded dependency creation from slide 13
+- Change request: "Switch the storage to a database" or "use another mail server for the test system"
+  -> OrderService has to be edited, although the order logic itself did not change
+- placeOrder cannot be unit tested: every test run writes to orders.db and sends a real e-mail
+
+
+==========================================================================
+2. Connascence
+--------------------------------------------------------------------------
+Two components are connascent if a change in one requires a change in the other to keep the
+system correct; static = source-code level, dynamic = runtime (slide 6).
+
+a) Connascence of Meaning - static
+- Where: int status with "0 = new, 1 = paid, 2 = shipped"; the meaning exists only in a comment
+- Every caller of placeOrder and every reader of Order.status must agree on these numbers
+  (same situation as the Order / ShippingService example on slide 7)
+- Silent break: a new status is inserted, e.g. 1 = cancelled, so that paid becomes 2
+  -> all callers that pass 1 for "paid" still compile, but now create cancelled orders
+- Also: placeOrder(..., 7) compiles, although status 7 does not exist
+
+b) Connascence of Meaning - static
+- Where: the strings "standard" and "express" in shippingCost
+- Callers and the switch must agree on the exact spelling of these values
+- Silent break: "express" is renamed to "priority" in the switch
+  -> all callers that still pass "express" compile and only fail at runtime
+
+c) Connascence of Position - static
+- Where: placeOrder(String id, String customer, String email, double amount, int status)
+  and new Order(id, customer, email, amount, status)
+- Three Strings in a row: the meaning of an argument depends only on its position
+- Silent break: the parameters customer and email are swapped in the signature (or a caller
+  mixes them up)
+  -> everything compiles, because both are Strings
+  -> the e-mail is sent to "Anna Huber" as address and the name is stored as e-mail
+
+d) Connascence of Execution - dynamic
+- Where: mailer.connect() has to be called before mailer.send()
+- Every user of SmtpMailer must know this order; the compiler does not check it
+- Silent break: the two lines are reordered, or a new method (e.g. a shipping notice) calls
+  send() without connect()
+  -> it compiles and only fails at runtime, when the mail should be sent
+
+e) Connascence of Name and Type - static (weak, for completeness)
+- OrderService uses the names FileOrderStore, SmtpMailer, save, send, ...
+- This form cannot be avoided, and a rename is found by the compiler, so nothing breaks silently
+- The problem is only that the type is a concrete class instead of an abstraction (see DIP)
+
+Strength: d) is dynamic and therefore the strongest one, followed by c) and a)/b).
+
+
+==========================================================================
+3. Refactoring
+--------------------------------------------------------------------------
+Problem        -> How the refactored code resolves it
+
+OCP            -> interface ShippingMethod with costFor(order); one class per method
+                  (StandardShipping, ExpressShipping)
+                  - OrderService.shippingCost(order, method) only calls method.costFor(order)
+                  - "pickup" = one new class; OrderService stays untouched
+                    (test: shippingCost_newMethod_needsNoChangeInOrderService)
+
+LSP            -> ArchiveOrderStore no longer extends FileOrderStore; it implements only OrderReader
+                  and forwards load() to another reader (composition instead of inheritance)
+                  - it has no save() at all, so nothing has to throw
+                  - passing an archive where an OrderWriter is needed is now a compile error
+                    instead of a runtime exception
+
+ISP            -> OrderStore is split into OrderReader (load), OrderWriter (save),
+                  OrderExporter (exportCsv) and OrderBackup (backupToCloud)
+                  - OrderService depends only on OrderWriter
+                  - FileOrderStore implements all four, the archive only the one it can fulfil
+                  - a change of backupToCloud no longer reaches OrderService
+
+DIP            -> OrderService gets an OrderWriter and a Mailer through its constructor
+                  (dependency injection, slide 14); Mailer is a new interface, SmtpMailer implements it
+                  - no "new" in OrderService any more; file name, host and port moved to Demo,
+                    the only place that knows the concrete classes
+                  - the tests replace store and mailer by lambdas: no file, no SMTP server
+
+a) Meaning     -> enum OrderStatus { NEW, PAID, SHIPPED } instead of int
+   (status)       - becomes Connascence of Name: a wrong value does not compile
+                  - new or reordered constants do not change the meaning of existing code
+
+b) Meaning     -> resolved together with OCP: the method is a ShippingMethod object, not a string
+   (strings)      - a typo is now a compile error instead of an IllegalArgumentException at runtime
+
+c) Position    -> placeOrder(Order order) takes one object; Order is created with a builder:
+                  Order.builder().id("o1").customer("Anna Huber").email("anna@example.com")...
+                  - becomes Connascence of Name: each value is set through a named method
+                  - the order of the calls does not matter (test: builder_setsEveryFieldByName)
+
+d) Execution   -> SmtpMailer.connect() is private; send() connects by itself when needed
+                  - the rule "connect before send" now lives in one place inside one class
+                    instead of in every caller
+                  - the Mailer interface only has send(), so the order cannot be got wrong
+                    (test: send_withoutExplicitConnect_connectsByItself)
+
+What remains   -> only Connascence of Name and Type, and only towards small interfaces:
+                  the weakest forms, and the compiler checks them
