@@ -62,13 +62,7 @@ a) Connascence of Meaning - static
   -> all callers that pass 1 for "paid" still compile, but now create cancelled orders
 - Also: placeOrder(..., 7) compiles, although status 7 does not exist
 
-b) Connascence of Meaning - static
-- Where: the strings "standard" and "express" in shippingCost
-- Callers and the switch must agree on the exact spelling of these values
-- Silent break: "express" is renamed to "priority" in the switch
-  -> all callers that still pass "express" compile and only fail at runtime
-
-c) Connascence of Position - static
+b) Connascence of Position - static
 - Where: placeOrder(String id, String customer, String email, double amount, int status)
   and new Order(id, customer, email, amount, status)
 - Three Strings in a row: the meaning of an argument depends only on its position
@@ -77,19 +71,14 @@ c) Connascence of Position - static
   -> everything compiles, because both are Strings
   -> the e-mail is sent to "Anna Huber" as address and the name is stored as e-mail
 
-d) Connascence of Execution - dynamic
+c) Connascence of Execution - dynamic
 - Where: mailer.connect() has to be called before mailer.send()
 - Every user of SmtpMailer must know this order; the compiler does not check it
 - Silent break: the two lines are reordered, or a new method (e.g. a shipping notice) calls
   send() without connect()
   -> it compiles and only fails at runtime, when the mail should be sent
 
-e) Connascence of Name and Type - static (weak, for completeness)
-- OrderService uses the names FileOrderStore, SmtpMailer, save, send, ...
-- This form cannot be avoided, and a rename is found by the compiler, so nothing breaks silently
-- The problem is only that the type is a concrete class instead of an abstraction (see DIP)
-
-Strength: d) is dynamic and therefore the strongest one, followed by c) and a)/b).
+Strength: c) is dynamic and therefore the strongest one, followed by b) and a).
 
 
 ==========================================================================
@@ -125,15 +114,12 @@ a) Meaning     -> enum OrderStatus { NEW, PAID, SHIPPED } instead of int
    (status)       - becomes Connascence of Name: a wrong value does not compile
                   - new or reordered constants do not change the meaning of existing code
 
-b) Meaning     -> resolved together with OCP: the method is a ShippingMethod object, not a string
-   (strings)      - a typo is now a compile error instead of an IllegalArgumentException at runtime
-
-c) Position    -> placeOrder(Order order) takes one object; Order is created with a builder:
+b) Position    -> placeOrder(Order order) takes one object; Order is created with a builder:
                   Order.builder().id("o1").customer("Anna Huber").email("anna@example.com")...
                   - becomes Connascence of Name: each value is set through a named method
                   - the order of the calls does not matter (test: builder_setsEveryFieldByName)
 
-d) Execution   -> SmtpMailer.connect() is private; send() connects by itself when needed
+c) Execution   -> SmtpMailer.connect() is private; send() connects by itself when needed
                   - the rule "connect before send" now lives in one place inside one class
                     instead of in every caller
                   - the Mailer interface only has send(), so the order cannot be got wrong
